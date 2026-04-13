@@ -1,0 +1,1493 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    /* A deep purple to soft grey gradient looks very high-end */
+    background: linear-gradient(135deg, #4b2c80 0%, #2d1a4d 40%, #f0f2f5 40%, #f0f2f5 100%);
+    background-attachment: fixed;
+    color: #333;
+}
+/* ================= NAVBAR ================= */
+.navbar, .dash-navbar {
+    background: #4b2c80;
+    color: white;
+    padding: 12px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar span, .dash-title {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.nav-menu a, .dash-menu a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.nav-menu a:hover, .dash-menu a:hover {
+    color: #fdb813;
+}
+
+.active-link {
+    color: #fdb813 !important;
+    font-weight: bold;
+}
+
+.logout-btn {
+    background: #fdb813;
+    color: #4b2c80 !important;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.logout-btn:hover {
+    background: #e0a800 !important;
+}
+
+/* ================= LOGIN ================= */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px;
+    gap: 80px; /* Increased gap between logo and form */
+    animation: fadeIn 1s ease-out;
+}
+
+.logo img {
+    width: 600px;
+    height: auto; /* Changed from 600px to auto to maintain aspect ratio */
+    /* Apply Floating Animation */
+    animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+.login-box {
+    background: white;
+    padding: 60px; /* Increased from 40px */
+    border-radius: 20px; /* Smoother corners */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    width: 450px; /* Explicitly wider to balance the 600px logo */
+    margin-left: 0; /* Let 'gap' in container handle the spacing */
+    transition: transform 0.3s ease;
+}
+
+.input-group-login input {
+    padding: 15px !important; /* Thicker inputs */
+    font-size: 16px !important;
+    border-radius: 10px !important;
+}
+
+.input-group-login label {
+    color: #4b2c80;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+/* ================= INPUTS ================= */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+.register-input-field {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.login-btn {
+    padding: 16px !important;
+    font-size: 18px !important;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+input:focus, .register-input-field:focus {
+    border-color: #4b2c80;
+    outline: none;
+}
+
+input:focus {
+    border-color: #4b2c80;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(75, 44, 128, 0.1);
+}
+
+/* ================= BUTTONS ================= */
+.login-btn, .register-btn {
+    background: #4b2c80;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+.login-btn:active {
+    transform: scale(0.98);
+}
+
+.login-btn:hover,
+.register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(75, 44, 128, 0.3);
+    background: #361d61 !important;
+}
+
+.error-msg {
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* ================= FLASH ================= */
+.flash {
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    display: block;
+}
+
+.flash.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.flash.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ================= REGISTER ================= */
+.register-header {
+    text-align: center; /* Centers the 'Sign up' text */
+    padding: 20px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.register-header h2 {
+    margin: 0;
+    color: #4b2c80;
+    font-size: 28px;
+}
+
+.back-btn {
+    padding: 6px 14px;
+    background: #4b2c80;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.register-layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 30px;
+}
+
+.side-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-col {
+    flex: 1;
+    max-width: 550px; /* Slightly wider for the larger form */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+@media (max-width: 1100px) {
+    .register-char-img {
+        width: 250px;
+    }
+}
+.uc-logo-img {
+    animation: logoPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes logoPop {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.register-char-img {
+    width: 350px; /* Increased from 220px */
+    height: auto;
+    animation: floatCharacter 4s ease-in-out infinite;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+@keyframes floatCharacter {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+.register-form {
+    animation: formSlideUp 0.8s ease-out forwards;
+    /* Match the premium look of your login box */
+    box-shadow: 0 15px 35px rgba(75, 44, 128, 0.15) !important;
+    border: 1px solid rgba(75, 44, 128, 0.05);
+}
+
+@keyframes formSlideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Delay each input slightly for a "waterfall" effect */
+.input-group:nth-child(1) { animation-delay: 0.1s; }
+.input-group:nth-child(2) { animation-delay: 0.2s; }
+.input-group:nth-child(3) { animation-delay: 0.3s; }
+.input-group:nth-child(4) { animation-delay: 0.4s; }
+.input-group:nth-child(5) { animation-delay: 0.5s; }
+.input-group:nth-child(n+6) { animation-delay: 0.6s; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.input-group {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.input-group input,
+.input-group select {
+    padding: 10px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #4b2c80;
+    outline: none;
+}
+
+.input-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4b2c80;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+}
+
+.error-msg {
+    color: #dc2626;
+    font-size: 11px;
+    min-height: 14px;
+}
+
+.input-error {
+    border-color: #dc2626 !important;
+}
+
+.remember-me-container label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+#remember {
+    accent-color: #4b2c80; /* Changes checkbox color to Purple */
+}
+
+.remember-me-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.register {
+    color: #64748b;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    margin-top: 25px;
+}
+
+.register a span {
+    color: #fdb813; /* UC Gold */
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.register a:hover span {
+    color: #e0a800; /* Darker Gold on hover */
+}
+
+.register a {
+    color: #4b2c80;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ================= PROFILE (OLD) ================= */
+.profile-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    padding: 30px 40px;
+    max-width: 700px;
+    width: 100%;
+}
+
+.profile-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: bold;
+    color: #4b2c80;
+    margin-bottom: 20px;
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
+}
+
+.profile-field {
+    display: flex;
+    gap: 10px;
+}
+
+.field-icon {
+    margin-top: 10px;
+    color: #777;
+}
+
+.field-body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.profile-input {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.profile-input:focus {
+    border-color: #4b2c80;
+    outline: none;
+}
+
+.readonly-input {
+    background: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.profile-save {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* ================= STUDENTS TABLE ================= */
+.students-wrapper {
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.students-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 30px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.students-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.students-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4b2c80;
+}
+
+.search-input {
+    padding: 8px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 220px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #4b2c80;
+}
+
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.students-table thead tr {
+    background: #4b2c80;
+    color: white;
+}
+
+.students-table th,
+.students-table td {
+    padding: 12px;
+    font-size: 13px;
+    text-align: left;
+}
+
+.students-table tbody tr:hover {
+    background: #f8f5ff;
+}
+
+.students-table tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.students-table tbody tr:nth-child(even):hover {
+    background: #f8f5ff;
+}
+
+.course-badge {
+    background: #ede9fe;
+    color: #4b2c80;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.table-footer {
+    margin-top: 14px;
+    font-size: 13px;
+    color: #666;
+    text-align: right;
+}
+
+.no-data {
+    text-align: center;
+    color: #aaa;
+    font-style: italic;
+    padding: 30px !important;
+}
+
+/* ================= DASHBOARD BODY ================= */
+.dash-body {
+    display: flex;
+    gap: 18px;
+    padding: 18px;
+    background: #f0f0f0;
+    min-height: calc(100vh - 56px);
+    align-items: flex-start;
+    box-sizing: border-box;
+}
+
+.dash-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.dash-card-header {
+    background: #6b21a8;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 16px;
+    letter-spacing: 0.3px;
+}
+
+.dash-card-body {
+    padding: 16px;
+    flex: 1;
+}
+
+/* Student Info */
+.dash-avatar {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 14px;
+}
+
+.dash-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #6b21a8;
+}
+
+.dash-divider {
+    height: 1px;
+    background: #e5e5e5;
+    margin: 4px 0 12px;
+}
+
+.dash-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dash-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.4;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+}
+
+.dash-info-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.dash-info-icon {
+    font-size: 14px;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+/* Announcements */
+.dash-announcements {
+    display: flex;
+    flex-direction: column;
+}
+
+.announcement-item {
+    padding: 14px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.announcement-item:last-child {
+    border-bottom: none;
+}
+
+.announcement-meta {
+    font-weight: 700;
+    font-size: 13px;
+    color: #333;
+    margin: 0 0 6px;
+}
+
+.announcement-text {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Rules */
+.dash-rules {
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+    font-size: 13px;
+    color: #333;
+    line-height: 1.7;
+}
+
+.rules-university {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0 0 4px;
+    color: #111;
+}
+
+.rules-college {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 16px;
+    text-transform: uppercase;
+}
+
+.rules-title {
+    font-size: 13px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    color: #111;
+}
+
+.rules-intro {
+    margin-bottom: 12px;
+}
+
+.dash-rules p {
+    margin: 0 0 10px;
+}
+
+/* Navbar Dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    min-width: 180px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #333 !important;
+    text-decoration: none;
+    margin-left: 0 !important;
+}
+
+.dropdown-menu a:hover {
+    background: #f5f0ff;
+    color: #6b21a8 !important;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* ================= EDIT PROFILE LAYOUT ================= */
+.edit-profile-layout {
+    display: flex;
+    gap: 24px;
+    padding: 30px;
+    align-items: flex-start;
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: calc(100vh - 60px);
+}
+
+.info-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+    flex: 1;
+}
+
+.info-card-header {
+    background: #6b21a8;
+    color: #fff;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 0;
+    letter-spacing: 0.4px;
+}
+
+.info-card-body {
+    padding: 28px 24px;
+}
+
+/* Photo Upload */
+.avatar-preview-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.avatar-preview-wrapper img {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #6b21a8;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+.avatar-name {
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: #222;
+    margin: 8px 0 2px;
+}
+
+.avatar-id {
+    text-align: center;
+    font-size: 13px;
+    color: #888;
+    margin: 0 0 20px;
+}
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#photoInput {
+    display: none;
+}
+
+.upload-label {
+    display: inline-block;
+    padding: 10px 22px;
+    background: #fff;
+    color: #6b21a8;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    border: 2px dashed #6b21a8;
+    width: 100%;
+    text-align: center;
+    transition: background 0.2s;
+    box-sizing: border-box;
+}
+
+.upload-label:hover {
+    background: #f5f0ff;
+}
+
+.upload-btn {
+    width: 100%;
+    padding: 11px 0;
+    background: #6b21a8;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.upload-btn:hover {
+    background: #581c87;
+}
+
+.upload-hint {
+    text-align: center;
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 2px;
+}
+
+/* Edit Fields */
+.field-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.field-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.field-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.field-input {
+    padding: 10px 13px;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #222;
+    background: #fff;
+    transition: border 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.field-input:focus {
+    outline: none;
+    border-color: #6b21a8;
+}
+
+.field-input[readonly] {
+    background: #f5f5f5;
+    color: #aaa;
+    cursor: not-allowed;
+    border-color: #e0e0e0;
+}
+
+.save-btn {
+    padding: 11px 36px;
+    background: #6b21a8;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.save-btn:hover {
+    background: #581c87;
+}
+
+/* ================= MODAL STYLING ================= */
+.modal-overlay {
+    display: none;        /* hidden by default ✓ */
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 9999;
+    justify-content: center;   /* will work when JS sets display:flex ✓ */
+    align-items: center;       /* will work when JS sets display:flex ✓ */
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-body input,
+.modal-body select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-footer {
+    padding: 12px 16px;
+    text-align: right;
+    border-top: 1px solid #eee;
+}
+
+.btn-blue {
+    background: #1e3a8a;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-blue:hover {
+    background: #172b63;
+}
+
+.btn-gray {
+    background: #6b7280;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-gray:hover {
+    background: #4b5563;
+}
+
+.close-modal,
+.close-btn {
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    background: none;
+    border: none;
+    color: #333;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+    .dash-body {
+        flex-direction: column;
+    }
+
+    .dash-card {
+        flex: unset !important;
+        width: 100%;
+    }
+
+    .edit-profile-layout {
+        flex-direction: column;
+        padding: 16px;
+    }
+
+    .field-row {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+
+    .logo img {
+        width: 300px;
+        height: auto;
+    }
+
+   .login-box {
+    background: #ffffff;
+    padding: 60px;
+    border-radius: 20px;
+    width: 450px;
+    /* Purple glow shadow to match the background */
+    box-shadow: 0 20px 50px rgba(75, 44, 128, 0.25);
+    border: 1px solid rgba(75, 44, 128, 0.1);
+}
+    .register-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+/* 2. Smooth Fade-in for the whole page content */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 3. Slide-in from the right for the login box */
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ================= FINAL RESPONSIVE FIXES ================= */
+
+/* Global safety */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Navbar responsive improvement */
+.navbar,
+.dash-navbar {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nav-menu,
+.dash-menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-menu a,
+.dash-menu a {
+    margin-left: 0;
+    white-space: nowrap;
+}
+
+/* Better container behavior */
+.container,
+.register-layout,
+.edit-profile-layout,
+.students-wrapper,
+.profile-wrapper,
+.dashboard-wrapper,
+.edit-profile-wrapper,
+.reservation-wrapper,
+.admin-dashboard-wrapper,
+.admin-sitin-wrapper,
+.admin-reservation-wrapper {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Table safety */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.students-table {
+    min-width: 900px;
+}
+
+/* Dashboard cards can shrink safely */
+.dash-card,
+.students-card,
+.profile-card,
+.login-box,
+.info-card,
+.dashboard-card,
+.reservation-card,
+.admin-card,
+.form-card,
+.chart-card,
+.stats-card {
+    max-width: 100%;
+}
+
+/* Dropdown safer on mobile */
+.dropdown-menu {
+    min-width: 160px;
+    max-width: 90vw;
+}
+
+/* ================= LARGE TABLET ================= */
+@media (max-width: 1100px) {
+    .container {
+        gap: 30px;
+        padding: 24px;
+    }
+
+    .logo img {
+        width: 420px;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 420px;
+        padding: 40px;
+    }
+
+    .register-char-img {
+        width: 220px;
+    }
+
+    .students-card,
+    .profile-card,
+    .info-card {
+        padding: 24px;
+    }
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 900px) {
+    .navbar,
+    .dash-navbar {
+        padding: 12px 16px;
+    }
+
+    .nav-menu,
+    .dash-menu {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dash-body {
+        flex-direction: column;
+        padding: 14px;
+    }
+
+    .dash-card {
+        width: 100%;
+        flex: unset !important;
+    }
+
+    .edit-profile-layout {
+        flex-direction: column;
+        padding: 16px;
+        gap: 16px;
+        min-height: auto;
+    }
+
+    .field-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .students-header,
+    .page-header,
+    .profile-header,
+    .reservation-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .search-input {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+    body {
+        background: #f0f2f5;
+    }
+
+    .navbar,
+    .dash-navbar {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .navbar span,
+    .dash-title {
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+
+    .nav-menu,
+    .dash-menu {
+        width: 100%;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .nav-menu a,
+    .dash-menu a {
+        flex: 1 1 calc(50% - 8px);
+        text-align: center;
+        font-size: 13px;
+        padding: 8px 10px;
+        margin: 0;
+    }
+
+    .logout-btn {
+        margin-left: 0;
+    }
+
+    .container {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 14px;
+        min-height: auto;
+    }
+
+    .logo {
+        display: flex;
+        justify-content: center;
+    }
+
+    .logo img {
+        width: 220px;
+        height: auto;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 100%;
+        padding: 24px 18px;
+        border-radius: 16px;
+        margin: 0;
+    }
+
+    .login-btn {
+        font-size: 16px !important;
+        padding: 14px !important;
+    }
+
+    .register-layout {
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 12px;
+        gap: 16px;
+    }
+
+    .center-col {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .side-col {
+        width: 100%;
+    }
+
+    .register-char-img {
+        width: 180px;
+    }
+
+    .register-header {
+        padding: 14px;
+    }
+
+    .register-header h2 {
+        font-size: 22px;
+    }
+
+    .profile-wrapper,
+    .students-wrapper,
+    .dashboard-wrapper,
+    .edit-profile-wrapper,
+    .reservation-wrapper,
+    .admin-dashboard-wrapper,
+    .admin-sitin-wrapper,
+    .admin-reservation-wrapper {
+        padding: 14px 10px;
+    }
+
+    .profile-card,
+    .students-card,
+    .info-card,
+    .dashboard-card,
+    .reservation-card,
+    .admin-card,
+    .form-card,
+    .chart-card,
+    .stats-card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .profile-title,
+    .students-title,
+    .page-title {
+        font-size: 20px;
+    }
+
+    .two-column {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .dash-avatar img {
+        width: 90px;
+        height: 90px;
+    }
+
+    .dash-card-header {
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+
+    .dash-card-body {
+        padding: 12px;
+    }
+
+    .dash-rules {
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .avatar-preview-wrapper img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .avatar-name {
+        font-size: 14px;
+    }
+
+    .avatar-id {
+        font-size: 12px;
+    }
+
+    .info-card-body {
+        padding: 18px 14px;
+    }
+
+    .field-label,
+    .input-label {
+        font-size: 10px;
+    }
+
+    .field-input,
+    .input-group input,
+    .input-group select,
+    .profile-input,
+    .search-input,
+    select,
+    textarea,
+    input[type="number"],
+    input[type="date"],
+    input[type="time"] {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    .save-btn,
+    .upload-btn,
+    .btn,
+    .action-btn,
+    .edit-btn,
+    .delete-btn,
+    .cancel-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .students-table {
+        min-width: 700px;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+
+    .modal-header {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .modal-body {
+        padding: 14px;
+    }
+
+    .modal-footer {
+        padding: 10px 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: stretch;
+    }
+
+    .btn-blue,
+    .btn-gray {
+        width: 100%;
+    }
+}
+
+/* ================= SMALL MOBILE ================= */
+@media (max-width: 480px) {
+    .navbar span,
+    .dash-title {
+        font-size: 15px;
+    }
+
+    .nav-menu a,
+    .dash-menu a {
+        flex: 1 1 100%;
+        font-size: 12px;
+    }
+
+    .container {
+        padding: 14px 10px;
+    }
+
+    .logo img {
+        width: 170px;
+    }
+
+    .login-box {
+        padding: 18px 14px;
+        border-radius: 12px;
+    }
+
+    .register-char-img {
+        width: 140px;
+    }
+
+    .students-title,
+    .profile-title,
+    .page-title {
+        font-size: 18px;
+    }
+
+    .students-card,
+    .profile-card,
+    .info-card {
+        padding: 12px;
+    }
+
+    .students-table {
+        min-width: 600px;
+    }
+
+    .dash-info-item,
+    .announcement-meta,
+    .announcement-text,
+    .dash-rules,
+    .students-table th,
+    .students-table td {
+        font-size: 12px;
+    }
+}

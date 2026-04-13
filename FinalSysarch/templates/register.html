@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body style="background: linear-gradient(135deg, #4b2c80 25%, #f0f2f5 25%); background-attachment: fixed;">
+
+    <div class="register-header">
+        <a href="/" class="back-btn">Back</a>
+        <h2>Sign up</h2>
+    </div>
+
+    <div class="register-layout">
+
+        <div class="side-col">
+            <img class="uc-logo-img" src="{{ url_for('static', filename='Uc logo.png') }}" alt="UC Logo">
+        </div>
+
+        <div class="center-col">
+            <form class="register-form" method="POST" action="/register" id="registerForm" novalidate>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <div class="input-group">
+                    <span class="error-msg" id="id_number_error"></span>
+                    <input type="text" name="id_number" id="id_number" placeholder="ID Number">
+                    <span class="input-label">ID Number</span>
+                </div>
+
+                <div class="input-group">
+                    <span class="error-msg" id="last_name_error"></span>
+                    <input type="text" name="last_name" id="last_name" placeholder="Last Name">
+                    <span class="input-label">Last Name</span>
+                </div>
+
+                <div class="input-group">
+                    <span class="error-msg" id="first_name_error"></span>
+                    <input type="text" name="first_name" id="first_name" placeholder="First Name">
+                    <span class="input-label">First Name</span>
+                </div>
+
+                <div class="input-group">
+                    <span class="error-msg" id="middle_name_error"></span>
+                    <input type="text" name="middle_name" id="middle_name" placeholder="Middle Name">
+                    <span class="input-label">Middle Name</span>
+                </div>
+
+                <div class="input-group">
+                    <span class="error-msg" id="course_error"></span>
+                    <select class="register-input-field" name="course" id="course">
+                        <option value="" disabled selected>Course</option>
+                        <option value="BSIT">BSIT - Information Technology</option>
+                        <option value="BSCS">BSCS - Computer Science</option>
+                        <option value="BSCE">BSCE - Civil Engineering</option>
+                        <option value="BSEE">BSEE - Electrical Engineering</option>
+                        <option value="BSME">BSME - Mechanical Engineering</option>
+                        <option value="BSECE">BSECE - Electronics Engineering</option>
+                        <option value="BSIE">BSIE - Industrial Engineering</option>
+                        <option value="BSCHE">BSChE - Chemical Engineering</option>
+                        <option value="BSMATH">BS Mathematics</option>
+                        <option value="BSBIO">BS Biology</option>
+                        <option value="BSPSYCH">BS Psychology</option>
+                        <option value="ABCOMM">AB Communication</option>
+                        <option value="ABPOLSCI">AB Political Science</option>
+                        <option value="BSBA">BSBA - Business Administration</option>
+                        <option value="BSACT">BS Accountancy</option>
+                        <option value="BSMA">BS Management Accounting</option>
+                        <option value="BSENT">BS Entrepreneurship</option>
+                        <option value="BEED">BEED - Elementary Education</option>
+                        <option value="BSED">BSED - Secondary Education</option>
+                        <option value="BSN">BSN - Nursing</option>
+                        <option value="BSPHAR">BS Pharmacy</option>
+                        <option value="BSHM">BSHM - Hospitality Management</option>
+                        <option value="BSTM">BSTM - Tourism Management</option>
+                        <option value="BSCJ">BSCJ - Criminal Justice</option>
+                        <option value="JD">JD - Juris Doctor</option>
+                        <option value="BSARCH">BS Architecture</option>
+                        <option value="BSSW">BS Social Work</option>
+                        <option value="BSMARE">BS Marine Engineering</option>
+                        <option value="BSMARTR">BS Marine Transportation</option>
+                    </select>
+                    <span class="input-label">Course</span>
+                </div>
+
+                <div class="input-group">
+                    <span class="error-msg" id="course_level_error"></span>
+                    <select class="register-input-field" name="course_level" id="course_level">
+                        <option value="" disabled selected>Course Level</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                    <span class="input-label">Course Level</span>
+                </div>
+
+                <div class="input-group">
+                    <span class="error-msg" id="password_error"></span>
+                    <input type="password" name="password" id="password" placeholder="Password">
+                    <span class="input-label">Password</span>
+                </div>
+
+                <div class="input-group">
+                    <span class="error-msg" id="repeat_password_error"></span>
+                    <input type="password" name="repeat_password" id="repeat_password" placeholder="Repeat your password">
+                    <span class="input-label">Repeat password</span>
+                </div>
+
+                <div class="input-group">
+                    <span class="error-msg" id="email_error"></span>
+                    <input type="email" name="email" id="email" placeholder="Email">
+                    <span class="input-label">Email Address</span>
+                </div>
+
+                <div class="input-group">
+                    <span class="error-msg" id="address_error"></span>
+                    <input type="text" name="address" id="address" placeholder="Address">
+                    <span class="input-label">Home Address</span>
+                </div>
+
+                <button type="submit" class="register-btn" onclick="return validateRegister()">Register</button>
+
+            </form>
+        </div>
+
+        <div class="side-col">
+            <img class="register-char-img" src="{{ url_for('static', filename='register.png') }}" alt="Register Character">
+        </div>
+
+    </div>
+
+<script>
+function validateRegister() {
+    let valid = true;
+
+    const fields = [
+        { id: 'id_number',       errorId: 'id_number_error',       msg: '⚠ ID Number is required.' },
+        { id: 'last_name',       errorId: 'last_name_error',       msg: '⚠ Last Name is required.' },
+        { id: 'first_name',      errorId: 'first_name_error',      msg: '⚠ First Name is required.' },
+        { id: 'middle_name',     errorId: 'middle_name_error',     msg: '⚠ Middle Name is required.' },
+        { id: 'course',          errorId: 'course_error',          msg: '⚠ Please select a Course.' },
+        { id: 'course_level',    errorId: 'course_level_error',    msg: '⚠ Please select a Course Level.' },
+        { id: 'password',        errorId: 'password_error',        msg: '⚠ Password is required.' },
+        { id: 'repeat_password', errorId: 'repeat_password_error', msg: '⚠ Please repeat your password.' },
+        { id: 'email',           errorId: 'email_error',           msg: '⚠ Email Address is required.' },
+        { id: 'address',         errorId: 'address_error',         msg: '⚠ Home Address is required.' },
+    ];
+
+    // Reset all errors first
+    fields.forEach(f => {
+        document.getElementById(f.errorId).textContent = '';
+        document.getElementById(f.id).classList.remove('input-error');
+    });
+
+    // Validate each field
+    fields.forEach(f => {
+        const el = document.getElementById(f.id);
+        if (el.value.trim() === '' || el.value === '') {
+            document.getElementById(f.errorId).textContent = f.msg;
+            el.classList.add('input-error');
+            valid = false;
+        }
+    });
+
+    // Extra check: passwords must match
+    const password = document.getElementById('password');
+    const repeat = document.getElementById('repeat_password');
+    const repeatError = document.getElementById('repeat_password_error');
+
+    if (password.value && repeat.value && password.value !== repeat.value) {
+        repeatError.textContent = '⚠ Passwords do not match.';
+        repeat.classList.add('input-error');
+        valid = false;
+    }
+
+    return valid;
+}
+</script>
+
+</body>
+</html>

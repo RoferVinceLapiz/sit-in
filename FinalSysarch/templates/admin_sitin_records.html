@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Current Sit-in Records</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --uc-purple: #4b2c80; --uc-purple-dark: #2d1a4d; --uc-gold: #fdb813; }
+        body { background: #f4f4f9; font-family: 'Segoe UI', sans-serif; margin: 0; }
+
+        /* NAVBAR */
+        .admin-navbar {
+            background: linear-gradient(135deg, var(--uc-purple), var(--uc-purple-dark));
+            height: 56px; display: flex; align-items: center;
+            justify-content: space-between; padding: 0 0 0 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .admin-navbar-title { color: white; font-weight: 700; font-size: 15px; }
+        .admin-nav-links { display: flex; align-items: center; height: 100%; }
+        .admin-nav-links a {
+            color: white; text-decoration: none; font-size: 13px;
+            font-weight: 500; padding: 0 12px; height: 56px;
+            display: flex; align-items: center; transition: 0.2s;
+        }
+        .admin-nav-links a:hover:not(.admin-logout-btn) { background: rgba(255,255,255,0.1); color: var(--uc-gold); }
+        .admin-nav-links a.active { color: var(--uc-gold); border-bottom: 3px solid var(--uc-gold); }
+        .admin-logout-btn {
+            background: var(--uc-gold) !important; color: var(--uc-purple-dark) !important;
+            font-weight: 800 !important; padding: 0 25px !important;
+            text-transform: uppercase;
+        }
+
+        /* FLASH */
+        .flash-msg {
+            max-width: 1100px; margin: 16px auto 0; padding: 12px 18px;
+            border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+        }
+        .flash-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+        .flash-error   { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+
+        /* PAGE */
+        .page-wrapper { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+        }
+        .page-title { font-size: 1.5rem; font-weight: 800; color: var(--uc-purple); margin: 0; }
+
+        /* STAT BADGES */
+        .stat-row { display: flex; gap: 14px; margin-bottom: 24px; }
+        .stat-badge {
+            background: white; border-radius: 10px; padding: 14px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex;
+            align-items: center; gap: 12px; flex: 1;
+        }
+        .stat-icon {
+            width: 42px; height: 42px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .stat-icon.purple { background: #f3e8ff; color: var(--uc-purple); }
+        .stat-icon.gold   { background: #fef3c7; color: #b45309; }
+        .stat-icon.green  { background: #d1fae5; color: #065f46; }
+        .stat-num { font-size: 1.6rem; font-weight: 800; color: #222; }
+        .stat-label { font-size: 0.78rem; color: #888; font-weight: 600; text-transform: uppercase; }
+
+        /* CARD */
+        .card {
+            background: white; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07); overflow: hidden;
+        }
+        .card-header {
+            background: var(--uc-purple); color: white;
+            padding: 14px 20px; font-weight: 700;
+            font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* SEARCH BAR */
+        .search-bar {
+            padding: 14px 20px; border-bottom: 1px solid #f0f0f0;
+            display: flex; gap: 10px; align-items: center;
+        }
+        .search-bar input {
+            padding: 8px 14px; border: 1.5px solid #ddd; border-radius: 8px;
+            font-size: 13px; width: 260px; transition: border 0.2s;
+        }
+        .search-bar input:focus { outline: none; border-color: var(--uc-purple); }
+
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        thead th {
+            background: #f8f5ff; color: var(--uc-purple);
+            padding: 11px 14px; text-align: left; font-weight: 700;
+            font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 2px solid #ede9fe;
+        }
+        tbody td { padding: 12px 14px; border-bottom: 1px solid #f5f5f5; color: #444; vertical-align: middle; }
+        tbody tr:hover td { background: #faf8ff; }
+
+        /* AVATAR in table */
+        .student-cell { display: flex; align-items: center; gap: 10px; }
+        .student-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            object-fit: cover; border: 2px solid var(--uc-gold);
+            flex-shrink: 0;
+        }
+        .student-name { font-weight: 700; color: #222; font-size: 0.88rem; }
+        .student-id   { font-size: 0.75rem; color: #999; }
+
+        /* BADGES */
+        .badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 700;
+        }
+        .badge-active   { background: #d1fae5; color: #065f46; }
+        .badge-lab      { background: #ede9fe; color: var(--uc-purple); }
+        .badge-purpose  { background: #fef3c7; color: #92400e; }
+
+        /* TIMER */
+        .timer { font-family: 'Courier New', monospace; font-size: 0.88rem; font-weight: 700; color: #374151; }
+
+        /* LOGOUT BUTTON */
+        .btn-logout {
+            background: #ef4444; color: white;
+            border: none; padding: 7px 16px; border-radius: 7px;
+            font-size: 0.82rem; font-weight: 700; cursor: pointer;
+            transition: background 0.2s; display: flex; align-items: center; gap: 5px;
+        }
+        .btn-logout:hover { background: #dc2626; }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center; padding: 60px 0; color: #bbb;
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 12px; display: block; }
+        .empty-state p { font-size: 14px; }
+
+        /* CONFIRM MODAL */
+        .modal-bg {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 9999;
+            justify-content: center; align-items: center;
+        }
+        .modal-box {
+            background: white; border-radius: 12px; width: 400px;
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .modal-box-header {
+            background: var(--uc-purple); color: white;
+            padding: 16px 20px; font-weight: 700; font-size: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-box-body { padding: 24px 20px; }
+        .modal-box-body p { margin: 0 0 6px; color: #444; font-size: 0.9rem; }
+        .modal-box-body .student-highlight {
+            font-weight: 800; color: var(--uc-purple); font-size: 1rem;
+        }
+        .modal-box-footer {
+            padding: 14px 20px; background: #f8f9fa;
+            border-top: 1px solid #eee; display: flex;
+            justify-content: flex-end; gap: 10px;
+        }
+        .btn-cancel {
+            padding: 9px 20px; background: #e2e8f0; color: #475569;
+            border: none; border-radius: 7px; font-weight: 600; cursor: pointer;
+        }
+        .btn-confirm-logout {
+            padding: 9px 22px; background: #ef4444; color: white;
+            border: none; border-radius: 7px; font-weight: 700; cursor: pointer;
+        }
+        .btn-confirm-logout:hover { background: #dc2626; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="admin-navbar">
+    <span class="admin-navbar-title">
+        <i class="fas fa-university" style="color: var(--uc-gold); margin-right: 8px;"></i>
+        COLLEGE OF COMPUTER STUDIES ADMIN
+    </span>
+    <div class="admin-nav-links">
+        <a href="/admin/dashboard"><i class="fas fa-home" style="margin-right:5px;"></i> Home</a>
+        <a href="javascript:void(0)" onclick="openSearchModal()"><i class="fas fa-search" style="margin-right:5px;"></i> Search</a>
+        <a href="/admin/students">Students</a>
+        <a href="/admin/sitin-records" class="active">
+            <i class="fas fa-desktop" style="margin-right:5px;"></i> Sit-in
+        </a>
+        <a href="/admin/view-sitin-records">View Sit-in Records</a>
+        <a href="#">Sit-in Reports</a>
+        <a href="#">Feedback Reports</a>
+        <a href="/admin/reservations">Reservation</a>
+        <a href="/admin/logout" class="admin-logout-btn">Log out</a>
+    </div>
+</div>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="flash-msg flash-{{ category }}">
+            <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endwith %}
+
+<div class="page-wrapper">
+
+    <div class="page-header">
+        <h2 class="page-title">
+            <i class="fas fa-desktop" style="color: var(--uc-gold);"></i>
+            Current Sit-in Records
+        </h2>
+    </div>
+
+    <!-- STAT BADGES -->
+    <div class="stat-row">
+        <div class="stat-badge">
+            <div class="stat-icon purple"><i class="fas fa-user-check"></i></div>
+            <div>
+                <div class="stat-num">{{ active_records | length }}</div>
+                <div class="stat-label">Currently Sitting In</div>
+            </div>
+        </div>
+        <div class="stat-badge">
+            <div class="stat-icon gold"><i class="fas fa-chart-bar"></i></div>
+            <div>
+                <div class="stat-num">{{ total_sitin }}</div>
+                <div class="stat-label">Total Sit-ins Today</div>
+            </div>
+        </div>
+        <div class="stat-badge">
+            <div class="stat-icon green"><i class="fas fa-sign-out-alt"></i></div>
+            <div>
+                <div class="stat-num">{{ total_logout }}</div>
+                <div class="stat-label">Logged Out Today</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="card">
+        <div class="card-header">
+            <span><i class="fas fa-list"></i> Active Students in Lab</span>
+            <span style="font-size: 12px; font-weight: 400; opacity: 0.8;">
+                Session is deducted only upon admin logout
+            </span>
+        </div>
+
+        <div class="search-bar">
+            <i class="fas fa-search" style="color: #aaa;"></i>
+            <input type="text" id="searchInput" placeholder="Search by name, ID, lab, or purpose..."
+                   onkeyup="filterTable()">
+        </div>
+
+        {% if active_records %}
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Student</th>
+                    <th>Course / Level</th>
+                    <th>Lab</th>
+                    <th>Purpose</th>
+                    <th>Time In</th>
+                    <th>Duration</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="sitinTable">
+                {% for r in active_records %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        <div class="student-cell">
+                            <img class="student-avatar"
+                                 src="{{ url_for('static', filename='uploads/' + r['id_number'] + '.png') }}"
+                                 onerror="this.src='https://ui-avatars.com/api/?name={{ r['first_name'] }}+{{ r['last_name'] }}&background=4b2c80&color=fff&size=36'"
+                                 alt="avatar">
+                            <div>
+                                <div class="student-name">{{ r['first_name'] }} {{ r['last_name'] }}</div>
+                                <div class="student-id">{{ r['id_number'] }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="font-weight:600; color:#333;">{{ r['course'] }}</span>
+                        <span style="color:#999; font-size:0.8rem;"> – {{ r['course_level'] }}{{ 'st' if r['course_level']=='1' else ('nd' if r['course_level']=='2' else ('rd' if r['course_level']=='3' else 'th')) }} Year</span>
+                    </td>
+                    <td><span class="badge badge-lab"><i class="fas fa-door-open"></i> Lab {{ r['lab'] }}</span></td>
+                    <td><span class="badge badge-purpose">{{ r['purpose'] }}</span></td>
+                    <td style="font-size:0.82rem; color:#555;">
+                        <i class="fas fa-clock" style="color: var(--uc-gold);"></i>
+                        {{ r['login_time'][:16] }}
+                    </td>
+                    <td>
+                        <span class="timer" id="timer-{{ r['id'] }}"
+                              data-login="{{ r['login_time'] }}">--:--:--</span>
+                    </td>
+                    <td>
+                        <button class="btn-logout"
+                                onclick="confirmLogout({{ r['id'] }}, '{{ r['first_name'] }} {{ r['last_name'] }}', '{{ r['id_number'] }}')">
+                            <i class="fas fa-sign-out-alt"></i> Log Out
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-desktop"></i>
+            <p>No students currently sitting in.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- CONFIRM LOGOUT MODAL -->
+<div class="modal-bg" id="logoutModal">
+    <div class="modal-box">
+        <div class="modal-box-header">
+            <span><i class="fas fa-sign-out-alt"></i> Confirm Student Log Out</span>
+            <button onclick="closeLogoutModal()"
+                    style="background:none;border:none;color:white;font-size:20px;cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-box-body">
+            <p>You are about to log out:</p>
+            <p class="student-highlight" id="modalStudentName"></p>
+            <p style="font-size:0.82rem; color:#888;" id="modalStudentId"></p>
+            <div style="margin-top:14px; padding:12px; background:#fef3c7; border-radius:8px; border-left:4px solid #f59e0b;">
+                <i class="fas fa-info-circle" style="color:#b45309;"></i>
+                <span style="font-size:0.85rem; color:#92400e; font-weight:600;">
+                    This will deduct <strong>1 session</strong> from the student's remaining sessions.
+                </span>
+            </div>
+        </div>
+        <div class="modal-box-footer">
+            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+            <form id="logoutForm" method="POST">
+                <button type="submit" class="btn-confirm-logout">
+                    <i class="fas fa-sign-out-alt"></i> Confirm Log Out
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- SEARCH + SIT-IN MODALS (reused from admin_dashboard) -->
+<div id="searchModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:1000;">
+    <div style="background:white;width:400px;border-radius:12px;overflow:hidden;">
+        <div style="background:var(--uc-purple);color:white;padding:15px;font-weight:bold;display:flex;justify-content:space-between;">
+            <span>Search Student</span>
+            <button onclick="document.getElementById('searchModal').style.display='none'"
+                    style="background:none;border:none;color:white;cursor:pointer;font-size:20px;">&times;</button>
+        </div>
+        <div style="padding:20px;">
+            <label style="font-size:13px;font-weight:bold;color:var(--uc-purple);">Enter Student ID Number</label>
+            <input type="text" id="idSearchInput"
+                   style="width:100%;padding:12px;margin-top:10px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;"
+                   placeholder="e.g. 2021-00123">
+            <button style="width:100%;margin-top:15px;padding:12px;background:var(--uc-purple);color:white;border:none;border-radius:6px;font-weight:bold;cursor:pointer;"
+                    onclick="lookupStudent()">SEARCH</button>
+        </div>
+    </div>
+</div>
+
+<div id="sitInFormModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:1000;">
+    <div style="background:white;width:500px;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+        <div style="background:var(--uc-purple);color:white;padding:18px 20px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:1.1rem;">Sit-In Form</span>
+            <button onclick="document.getElementById('sitInFormModal').style.display='none'"
+                    style="background:none;border:none;color:white;cursor:pointer;font-size:24px;">&times;</button>
+        </div>
+        <form action="/admin/sit-in" method="POST">
+            <div style="padding:25px;">
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;font-size:12px;font-weight:700;color:var(--uc-purple);text-transform:uppercase;margin-bottom:5px;">ID Number:</label>
+                    <input type="text" name="id_number" id="display_id" readonly
+                           style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;background:#f8f9fa;color:#555;box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;font-size:12px;font-weight:700;color:var(--uc-purple);text-transform:uppercase;margin-bottom:5px;">Student Name:</label>
+                    <input type="text" id="display_name" readonly
+                           style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;background:#f8f9fa;color:#555;box-sizing:border-box;">
+                </div>
+                <div style="display:flex;gap:15px;margin-bottom:15px;">
+                    <div style="flex:1;">
+                        <label style="display:block;font-size:12px;font-weight:700;color:var(--uc-purple);text-transform:uppercase;margin-bottom:5px;">Purpose:</label>
+                        <select name="purpose" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;background:white;box-sizing:border-box;">
+                            <option value="C Programming">C Programming</option>
+                            <option value="Java">Java</option>
+                            <option value="PHP">PHP</option>
+                            <option value="Python">Python</option>
+                            <option value="Database">Database</option>
+                        </select>
+                    </div>
+                    <div style="flex:1;">
+                        <label style="display:block;font-size:12px;font-weight:700;color:var(--uc-purple);text-transform:uppercase;margin-bottom:5px;">Lab:</label>
+                        <select name="lab" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;background:white;box-sizing:border-box;">
+                            <option value="524">Lab 524</option>
+                            <option value="526">Lab 526</option>
+                            <option value="528">Lab 528</option>
+                            <option value="530">Lab 530</option>
+                            <option value="542">Lab 542</option>
+                            <option value="544">Lab 544</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-bottom:5px;">
+                    <label style="display:block;font-size:12px;font-weight:700;color:var(--uc-purple);text-transform:uppercase;margin-bottom:5px;">Remaining Sessions:</label>
+                    <input type="text" id="display_remaining" readonly
+                           style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;background:#f8f9fa;color:#16a34a;font-weight:800;font-size:1.1rem;box-sizing:border-box;">
+                </div>
+            </div>
+            <div style="padding:15px 25px;background:#f4f4f9;display:flex;justify-content:flex-end;gap:12px;border-top:1px solid #eee;">
+                <button type="button" onclick="document.getElementById('sitInFormModal').style.display='none'"
+                        style="padding:10px 20px;border:none;border-radius:6px;background:#e2e8f0;color:#475569;font-weight:600;cursor:pointer;">
+                    Close
+                </button>
+                <button type="submit"
+                        style="padding:10px 30px;border:none;border-radius:6px;background:var(--uc-gold);color:var(--uc-purple);font-weight:800;cursor:pointer;">
+                    Sit In
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+/* ── LIVE TIMER ── */
+function updateTimers() {
+    document.querySelectorAll('.timer').forEach(el => {
+        const loginStr = el.dataset.login;
+        if (!loginStr) return;
+        const login = new Date(loginStr.replace(' ', 'T'));
+        const now   = new Date();
+        const diff  = Math.floor((now - login) / 1000);
+        const h = Math.floor(diff / 3600).toString().padStart(2, '0');
+        const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
+        const s = (diff % 60).toString().padStart(2, '0');
+        el.textContent = `${h}:${m}:${s}`;
+
+        /* Turn red if over 3 hours */
+        if (diff > 10800) el.style.color = '#ef4444';
+        else if (diff > 7200) el.style.color = '#f59e0b';
+        else el.style.color = '#374151';
+    });
+}
+setInterval(updateTimers, 1000);
+updateTimers();
+
+/* ── CONFIRM LOGOUT MODAL ── */
+function confirmLogout(recordId, studentName, studentId) {
+    document.getElementById('modalStudentName').textContent = studentName;
+    document.getElementById('modalStudentId').textContent   = 'ID: ' + studentId;
+    document.getElementById('logoutForm').action = '/admin/sitin-logout/' + recordId;
+    document.getElementById('logoutModal').style.display = 'flex';
+}
+function closeLogoutModal() {
+    document.getElementById('logoutModal').style.display = 'none';
+}
+
+/* ── TABLE SEARCH ── */
+function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('#sitinTable tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
+/* ── SEARCH + SIT-IN (reused) ── */
+function openSearchModal() { document.getElementById('searchModal').style.display = 'flex'; }
+function lookupStudent() {
+    const idNum = document.getElementById('idSearchInput').value.trim();
+    if (!idNum) { alert('Please enter an ID number.'); return; }
+    fetch(`/admin/get-student/${idNum}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('display_id').value        = data.id_number;
+                document.getElementById('display_name').value      = data.name;
+                document.getElementById('display_remaining').value = data.remaining;
+                document.getElementById('searchModal').style.display    = 'none';
+                document.getElementById('sitInFormModal').style.display = 'flex';
+                document.getElementById('idSearchInput').value = '';
+            } else {
+                alert(data.message || 'Student not found!');
+            }
+        })
+        .catch(() => alert('An error occurred.'));
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CCS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        /* High-end Purple & Gold Theme */
+        :root {
+            --uc-purple: #4b2c80;
+            --uc-purple-dark: #2d1a4d;
+            --uc-gold: #fdb813;
+            --uc-gold-hover: #e0a800;
+        }
+
+        /* NAVBAR STYLING */
+        .admin-navbar {
+            background: linear-gradient(135deg, var(--uc-purple) 0%, var(--uc-purple-dark) 100%);
+            height: 56px; /* Slightly taller for a premium feel */
+            padding: 0 0 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .admin-nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 0 12px;
+            height: 56px; /* Match navbar height */
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .admin-nav-links a:hover:not(.admin-logout-btn) {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--uc-gold);
+        }
+
+        /* THE GOLD LOGOUT BUTTON */
+        .admin-logout-btn {
+            background: var(--uc-gold) !important;
+            color: var(--uc-purple-dark) !important;
+            height: 100% !important;
+            padding: 0 25px !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            font-weight: 800 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-logout-btn:hover {
+            background: white !important;
+            color: var(--uc-purple-dark) !important;
+        }
+
+        /* CARD ADJUSTMENTS */
+        .dash-card-header {
+            background: var(--uc-purple) !important;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .login-btn {
+            background: var(--uc-purple) !important;
+            border: none;
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .login-btn:hover {
+            background: var(--uc-purple-dark) !important;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body style="background: #f4f4f9;">
+
+<div class="admin-navbar">
+    <span class="admin-navbar-title" style="color: white; font-weight: 700; font-size: 15px; letter-spacing: 0.5px;">
+        <i class="fas fa-university" style="color: var(--uc-gold); margin-right: 8px;"></i>
+        COLLEGE OF COMPUTER STUDIES ADMIN
+    </span>
+    
+    <div class="admin-nav-links" style="display: flex; align-items: center; height: 100%;">
+        <a href="/admin/dashboard">Home</a>
+        <a href="javascript:void(0)" onclick="openSearchModal()">Search</a>
+        <a href="/admin/students">Students</a>
+        <a href="/admin/sitin-records">Sit-in</a>
+        <a href="/admin/view-sitin-records">View Sit-in Records</a>
+        <a href="/admin/sitin-reports">Sit-in Reports</a>
+        <a href="/admin/feedback-reports">Feedback Reports</a>
+        <a href="/admin/reservations">Reservation</a>
+        
+        <a href="/admin/logout" class="admin-logout-btn">
+            Log out
+        </a>
+    </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div style="padding: 15px 20px;">
+        {% for category, message in messages %}
+            <div class="flash {{ category }}" style="border-radius: 8px; border-left: 5px solid var(--uc-gold);">{{ message }}</div>
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<div class="dash-body" style="display: flex; gap: 20px; padding: 20px;">
+
+    <div class="dash-card" style="flex: 0 0 350px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <div class="dash-card-header" style="padding: 15px; color: white;">📊 SYSTEM STATISTICS</div>
+        <div class="dash-card-body" style="padding: 20px;">
+            <div class="dash-info-list">
+                <div class="dash-info-item" style="margin-bottom: 15px; display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-users" style="color: var(--uc-purple); width: 20px;"></i>
+                    <span>Students Registered: <strong style="color: var(--uc-purple);">{{ total_students }}</strong></span>
+                </div>
+                <div class="dash-info-item" style="margin-bottom: 15px; display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-desktop" style="color: var(--uc-purple); width: 20px;"></i>
+                    <span>Currently Sit-in: <strong style="color: var(--uc-purple);">{{ current_sitin }}</strong></span>
+                </div>
+                <div class="dash-info-item" style="margin-bottom: 15px; display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-chart-line" style="color: var(--uc-purple); width: 20px;"></i>
+                    <span>Total Sit-in: <strong style="color: var(--uc-purple);">{{ total_sitin }}</strong></span>
+                </div>
+            </div>
+
+            <div class="dash-divider" style="height: 1px; background: #eee; margin: 20px 0;"></div>
+            
+            <div style="padding: 10px;">
+                <canvas id="courseChart"></canvas>
+                <div class="chart-legend" id="chartLegend" style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-card" style="flex: 1; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <div class="dash-card-header" style="padding: 15px; color: white;">📢 POST ANNOUNCEMENT</div>
+        <div class="dash-card-body" style="padding: 20px;">
+            
+            <form method="POST" action="/admin/announce" class="announce-form">
+                <textarea name="message" class="field-input" style="min-height: 100px; padding: 15px; width: 100%; border: 1px solid #ddd; border-radius: 8px; outline: none;" placeholder="Post a new update for students..."></textarea>
+                <button type="submit" class="login-btn" style="padding: 12px 40px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px;">
+                    SUBMIT POST
+                </button>
+            </form>
+
+            <h3 style="color: var(--uc-purple); margin-top: 35px; font-size: 1.2rem; border-left: 5px solid var(--uc-gold); padding-left: 12px; font-weight: 800;">
+                Recent Announcements
+            </h3>
+
+            <div class="dash-announcements" style="margin-top: 20px;">
+                {% if announcements %}
+                    {% for a in announcements %}
+                    <div class="announcement-item" style="border-bottom: 1px solid #f0f0f0; padding: 15px 0;">
+                        <div class="announcement-meta" style="color: var(--uc-purple); font-size: 0.85rem; margin-bottom: 8px;">
+                            <span style="font-weight: 700;"><i class="fas fa-calendar-alt"></i> {{ a['posted_at'][:10] }}</span>
+                            <form method="POST" action="/admin/delete-announcement/{{ a['id'] }}" style="display:inline; float: right;">
+                                <button type="submit" style="color: #dc2626; border: none; background: none; cursor: pointer; font-weight: bold; font-size: 11px;">
+                                    <i class="fas fa-trash"></i> DELETE
+                                </button>
+                            </form>
+                        </div>
+                        <p style="color: #444; line-height: 1.6; font-size: 0.95rem;">{{ a['message'] }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; color: #aaa; margin-top: 30px;">No active announcements.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="searchModal" class="modal-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;">
+    <div class="modal-content" style="background: white; width: 400px; border-radius: 12px; overflow: hidden;">
+        <div class="modal-header" style="background: var(--uc-purple); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between;">
+            <span>Search Student</span>
+            <button onclick="closeModal('searchModal')" style="background: none; border: none; color: white; cursor: pointer; font-size: 20px;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <label style="font-size: 13px; font-weight: bold; color: var(--uc-purple);">Enter Student ID Number</label>
+            <input type="text" id="idSearchInput" style="width: 100%; padding: 12px; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px;" placeholder="1234567890">
+            <button class="btn-blue" style="width: 100%; margin-top: 15px; padding: 12px; background: var(--uc-purple); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;" onclick="lookupStudent()">SEARCH</button>
+        </div>
+    </div>
+</div>
+
+<div id="sitInFormModal" class="modal-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;">
+    <div class="modal-content" style="background: white; width: 500px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+        
+        <div class="modal-header" style="background: #4b2c80; color: white; padding: 18px 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 1.1rem; letter-spacing: 0.5px;">Sit-In Form</span>
+            <button onclick="closeModal('sitInFormModal')" style="background: none; border: none; color: white; cursor: pointer; font-size: 24px;">&times;</button>
+        </div>
+
+        <form action="/admin/sit-in" method="POST">
+            <div class="modal-body" style="padding: 25px;">
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #4b2c80; text-transform: uppercase; margin-bottom: 5px;">ID Number:</label>
+                    <input type="text" name="id_number" id="display_id" readonly 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: #f8f9fa; color: #555;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #4b2c80; text-transform: uppercase; margin-bottom: 5px;">Student Name:</label>
+                    <input type="text" id="display_name" readonly 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: #f8f9fa; color: #555;">
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #4b2c80; text-transform: uppercase; margin-bottom: 5px;">Purpose:</label>
+                        <select name="purpose" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                            <option value="C Programming">C Programming</option>
+                            <option value="Java">Java</option>
+                            <option value="PHP">PHP</option>
+                            <option value="Python">Python</option>
+                            <option value="Database">Database</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #4b2c80; text-transform: uppercase; margin-bottom: 5px;">Lab:</label>
+                        <input type="text" name="lab" placeholder="524" required
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 5px;">
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #4b2c80; text-transform: uppercase; margin-bottom: 5px;">Remaining Session:</label>
+                    <input type="text" id="display_remaining" readonly 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: #f8f9fa; color: #16a34a; font-weight: 800; font-size: 1.1rem;">
+                </div>
+
+            </div>
+
+            <div class="modal-footer" style="padding: 15px 25px; background: #f4f4f9; display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #eee;">
+                <button type="button" onclick="closeModal('sitInFormModal')" 
+                        style="padding: 10px 20px; border: none; border-radius: 6px; background: #e2e8f0; color: #475569; font-weight: 600; cursor: pointer;">
+                    Close
+                </button>
+                <button type="submit" 
+                        style="padding: 10px 30px; border: none; border-radius: 6px; background: #fdb813; color: #4b2c80; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    Sit In
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const courseStats = {{ course_stats | tojson }};
+    const labels = courseStats.map(c => c.course);
+    const data = courseStats.map(c => c.count);
+    const colors = ['#4b2c80', '#fdb813', '#7c3aed', '#fbbf24', '#2e1065', '#d97706'];
+
+    if (labels.length > 0) {
+        const ctx = document.getElementById('courseChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{ data: data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }]
+            },
+            options: { cutout: '70%', plugins: { legend: { display: false } } }
+        });
+        const legend = document.getElementById('chartLegend');
+        labels.forEach((label, i) => {
+            const item = document.createElement('div');
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            item.style.gap = '5px';
+            item.innerHTML = `<span style="width:10px;height:10px;background:${colors[i]};border-radius:2px;"></span>${label}`;
+            legend.appendChild(item);
+        });
+    }
+
+    function openSearchModal() { document.getElementById('searchModal').style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function lookupStudent() {
+        const idSearchInput = document.getElementById('idSearchInput');
+        const idNum = idSearchInput.value.trim();
+        
+        if (!idNum) {
+            alert("Please enter an ID number.");
+            return;
+        }
+        
+        fetch(`/admin/get-student/${idNum}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Populate the Sit-In Modal fields
+                    document.getElementById('display_id').value = data.id_number;
+                    document.getElementById('display_name').value = data.name;
+                    
+                    // This targets the input with id="display_remaining"
+                    // data.remaining comes directly from your Python variable
+                    document.getElementById('display_remaining').value = data.remaining;
+                    
+                    // Close Search Modal and Open Sit-In Modal
+                    closeModal('searchModal');
+                    document.getElementById('sitInFormModal').style.display = 'flex';
+                    
+                    // Optional: Clear search input for next time
+                    idSearchInput.value = ""; 
+                } else {
+                    alert(data.message || "Student not found!");
+                }
+            })
+            .catch(err => {
+                console.error("Fetch error:", err);
+                alert("An error occurred while fetching student data.");
+            });
+    }
+</script>
+
+</body>
+</html>

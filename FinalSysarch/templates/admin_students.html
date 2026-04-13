@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Students</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+/* ================= THEME ================= */
+:root {
+    --uc-purple: #4b2c80;
+    --uc-purple-dark: #2d1a4d;
+    --uc-gold: #fdb813;
+}
+
+/* ================= BODY ================= */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f4f9;
+}
+
+/* ================= NAVBAR ================= */
+.admin-navbar {
+    background: linear-gradient(135deg, var(--uc-purple), var(--uc-purple-dark));
+    height: 56px;
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-navbar span {
+    color: white;
+    font-weight: 700;
+}
+
+.admin-nav-links {
+    display: flex;
+    height: 100%;
+}
+
+.admin-nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+}
+
+.admin-nav-links a:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--uc-gold);
+}
+
+.admin-logout-btn {
+    background: var(--uc-gold);
+    color: var(--uc-purple-dark) !important;
+    font-weight: bold;
+    padding: 0 25px !important;
+}
+
+/* ================= CONTENT ================= */
+.container {
+    padding: 40px;
+}
+
+/* LAYOUT FIX */
+.student-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* LEFT SIDE */
+.student-info {
+    min-width: 260px;
+}
+
+.student-info h1 {
+    color: var(--uc-purple);
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.student-info p {
+    color: #555;
+}
+
+/* RIGHT TABLE CARD */
+.student-table-card {
+    flex: 1;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: var(--uc-purple);
+    color: white;
+    padding: 14px;
+    text-align: left;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+    background: #f9f9f9;
+}
+
+/* ================= SEARCH MODAL ================= */
+.modal {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.modal-content {
+    background:white;
+    width:400px;
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.modal-header {
+    background: var(--uc-purple);
+    color:white;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.modal-body {
+    padding:20px;
+}
+
+.modal-body input {
+    width:100%;
+    padding:10px;
+    border:1px solid #ddd;
+    border-radius:6px;
+}
+
+.modal-body button {
+    margin-top:15px;
+    width:100%;
+    padding:12px;
+    background: var(--uc-purple);
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="admin-navbar">
+    <span>
+        <i class="fas fa-university" style="color: var(--uc-gold);"></i>
+        COLLEGE OF COMPUTER STUDIES ADMIN
+    </span>
+
+    <div class="admin-nav-links">
+        <a href="/admin/dashboard">Home</a>
+        <a href="javascript:void(0)" onclick="openSearchModal()">Search</a>
+        <a href="/admin/students">Students</a>
+        <a href="/admin/sitin-records">Sit-in</a>
+        <a href="/admin/view-sitin-records">View Sit-in Records</a>
+        <a href="/admin/sitin-reports">Sit-in Reports</a>
+        <a href="/admin/feedback-reports">Feedback Reports</a>
+        <a href="/admin/reservations">Reservation</a>
+        <a href="/admin/logout" class="admin-logout-btn">Log out</a>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+    <div class="student-layout">
+
+        <!-- LEFT -->
+        <div class="student-info">
+            <h1><i class="fas fa-user-graduate"></i> Students List</h1>
+            <p>Total Students: <strong>{{ total_students }}</strong></p>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="student-table-card">
+            <table>
+                <tr>
+                    <th>ID Number</th>
+                    <th>Name</th>
+                    <th>Course</th>
+                    <th>Level</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                </tr>
+
+                {% for s in students %}
+                <tr>
+                    <td>{{ s.id_number }}</td>
+                    <td>{{ s.first_name }} {{ s.middle_name }} {{ s.last_name }}</td>
+                    <td>{{ s.course }}</td>
+                    <td>{{ s.course_level }}</td>
+                    <td>{{ s.email }}</td>
+                    <td>{{ s.address }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>Search Student</span>
+            <button onclick="closeModal()" style="background:none;border:none;color:white;font-size:20px;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="idSearchInput" placeholder="Enter ID Number">
+            <button onclick="lookupStudent()">SEARCH</button>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+function openSearchModal() {
+    document.getElementById('searchModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('searchModal').style.display = 'none';
+}
+
+function lookupStudent() {
+    const id = document.getElementById('idSearchInput').value.trim();
+
+    if (!id) {
+        alert("Enter ID first");
+        return;
+    }
+
+    fetch(`/admin/get-student/${id}`)
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("Student Found: " + data.name);
+        } else {
+            alert("Student not found");
+        }
+    })
+    .catch(() => alert("Error fetching student"));
+}
+</script>
+
+</body>
+</html>

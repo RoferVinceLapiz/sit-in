@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CCS Sit-in Monitoring System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="navbar">
+    <span>College of Computer Studies Sit-in Monitoring System</span>
+    <div class="nav-menu">
+        <a href="#">Home</a> 
+        <a href="#">Community</a> 
+        <a href="#">About</a> 
+        <a href="/">Login</a> 
+        <a href="/register">Register</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="logo">
+        <img src="{{ url_for('static', filename='ccs logo.png') }}">
+    </div>
+
+    <div class="login-box">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/" id="loginForm" novalidate>
+
+            <div class="input-group-login">
+                <label>ID Number</label>
+                <input type="text" name="id_number" id="id_number" placeholder="Enter a valid id number">
+                <span class="error-msg" id="id_number_error"></span>
+            </div>
+
+            <div class="input-group-login">
+                <label>Password</label>
+                <input type="password" name="password" id="password" placeholder="Enter password">
+                <span class="error-msg" id="password_error"></span>
+            </div>
+
+            <div class="remember-me-container">
+                <input type="checkbox" id="remember">
+                <label for="remember">Remember me</label>
+            </div>
+            <br>
+
+            <button type="submit" class="login-btn" onclick="return validateLogin()">Login</button>
+
+            <p class="register">
+                Don't have an account? 
+                <a href="/register"><span>Register</span></a>
+            </p>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+function validateLogin() {
+    let valid = true;
+
+    const idNumber = document.getElementById('id_number');
+    const password = document.getElementById('password');
+    const idError = document.getElementById('id_number_error');
+    const passError = document.getElementById('password_error');
+
+    // Reset errors
+    idError.textContent = '';
+    passError.textContent = '';
+    idNumber.classList.remove('input-error');
+    password.classList.remove('input-error');
+
+    if (idNumber.value.trim() === '') {
+        idError.textContent = '⚠ ID Number is required.';
+        idNumber.classList.add('input-error');
+        valid = false;
+    }
+
+    if (password.value.trim() === '') {
+        passError.textContent = '⚠ Password is required.';
+        password.classList.add('input-error');
+        valid = false;
+    }
+
+    return valid;
+}
+</script>
+
+</body>
+</html>

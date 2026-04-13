@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="dash-navbar">
+    <span class="dash-title">
+        <i class="fas fa-desktop" style="color: var(--uc-gold); margin-right: 8px;"></i>
+        CCS Sit-in Monitoring System
+    </span>
+    <div class="dash-menu">
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle">Notification <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 5px;"></i></a>
+            <div class="dropdown-menu">
+                <a href="#">No new notifications</a>
+            </div>
+        </div>
+        <a href="/dashboard">Home</a>
+        <a href="/edit-profile">Edit Profile</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="/reservation">Reservation</a>
+        <a href="/logout" class="logout-btn">Log out</a>
+    </div>
+</div>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- TWO-TABLE LAYOUT -->
+<div class="edit-profile-layout">
+
+    <!-- LEFT: Profile Picture Upload -->
+    <div class="info-card">
+        <div class="info-card-header">Profile Picture</div>
+        <div class="info-card-body">
+
+            <div class="avatar-preview-wrapper">
+                {% if has_photo %}
+                    <img id="avatarPreview" src="{{ url_for('static', filename=photo_path) }}?r={{ range(1000,9999) | random }}">
+                {% else %}
+                    <img id="avatarPreview"
+                         src="https://ui-avatars.com/api/?name={{ student.first_name }}+{{ student.last_name }}&background=6b21a8&color=fff&size=150">
+                {% endif %}
+            </div>
+
+            <p class="avatar-name">{{ student['first_name'] }} {{ student['last_name'] }}</p>
+            <p class="avatar-id">{{ student['id_number'] }}</p>
+
+            <form method="POST" action="/upload-photo" enctype="multipart/form-data" class="upload-form">
+                <label class="upload-label" for="photoInput">Choose Photo</label>
+                <input type="file" id="photoInput" name="photo" accept="image/*" onchange="previewImage(event)">
+                <button type="submit" class="upload-btn">Upload</button>
+            </form>
+
+            <p class="upload-hint">JPG, PNG or GIF · Max 2MB</p>
+
+        </div>
+    </div>
+
+    <!-- RIGHT: Editable Student Info -->
+    <div class="info-card">
+        <div class="info-card-header">Edit Information</div>
+        <div class="info-card-body">
+
+            <form method="POST" class="profile-form">
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="field-label">ID Number</label>
+                        <input type="text" value="{{ student['id_number'] }}" class="field-input" readonly>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Last Name</label>
+                        <input type="text" name="last_name" value="{{ student['last_name'] }}" class="field-input">
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="field-label">First Name</label>
+                        <input type="text" name="first_name" value="{{ student['first_name'] }}" class="field-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Middle Name</label>
+                        <input type="text" name="middle_name" value="{{ student['middle_name'] }}" class="field-input">
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="field-label">Course</label>
+                        <select name="course" class="field-input">
+                            <option value="BSIT"    {% if student['course'] == 'BSIT'    %}selected{% endif %}>BSIT - Information Technology</option>
+                            <option value="BSCS"    {% if student['course'] == 'BSCS'    %}selected{% endif %}>BSCS - Computer Science</option>
+                            <option value="BSCE"    {% if student['course'] == 'BSCE'    %}selected{% endif %}>BSCE - Civil Engineering</option>
+                            <option value="BSEE"    {% if student['course'] == 'BSEE'    %}selected{% endif %}>BSEE - Electrical Engineering</option>
+                            <option value="BSME"    {% if student['course'] == 'BSME'    %}selected{% endif %}>BSME - Mechanical Engineering</option>
+                            <option value="BSECE"   {% if student['course'] == 'BSECE'   %}selected{% endif %}>BSECE - Electronics Engineering</option>
+                            <option value="BSIE"    {% if student['course'] == 'BSIE'    %}selected{% endif %}>BSIE - Industrial Engineering</option>
+                            <option value="BSCHE"   {% if student['course'] == 'BSCHE'   %}selected{% endif %}>BSChE - Chemical Engineering</option>
+                            <option value="BSMATH"  {% if student['course'] == 'BSMATH'  %}selected{% endif %}>BS Mathematics</option>
+                            <option value="BSBIO"   {% if student['course'] == 'BSBIO'   %}selected{% endif %}>BS Biology</option>
+                            <option value="BSPSYCH" {% if student['course'] == 'BSPSYCH' %}selected{% endif %}>BS Psychology</option>
+                            <option value="ABCOMM"  {% if student['course'] == 'ABCOMM'  %}selected{% endif %}>AB Communication</option>
+                            <option value="ABPOLSCI"{% if student['course'] == 'ABPOLSCI'%}selected{% endif %}>AB Political Science</option>
+                            <option value="BSBA"    {% if student['course'] == 'BSBA'    %}selected{% endif %}>BSBA - Business Administration</option>
+                            <option value="BSACT"   {% if student['course'] == 'BSACT'   %}selected{% endif %}>BS Accountancy</option>
+                            <option value="BSMA"    {% if student['course'] == 'BSMA'    %}selected{% endif %}>BS Management Accounting</option>
+                            <option value="BSENT"   {% if student['course'] == 'BSENT'   %}selected{% endif %}>BS Entrepreneurship</option>
+                            <option value="BEED"    {% if student['course'] == 'BEED'    %}selected{% endif %}>BEED - Elementary Education</option>
+                            <option value="BSED"    {% if student['course'] == 'BSED'    %}selected{% endif %}>BSED - Secondary Education</option>
+                            <option value="BSN"     {% if student['course'] == 'BSN'     %}selected{% endif %}>BSN - Nursing</option>
+                            <option value="BSPHAR"  {% if student['course'] == 'BSPHAR'  %}selected{% endif %}>BS Pharmacy</option>
+                            <option value="BSHM"    {% if student['course'] == 'BSHM'    %}selected{% endif %}>BSHM - Hospitality Management</option>
+                            <option value="BSTM"    {% if student['course'] == 'BSTM'    %}selected{% endif %}>BSTM - Tourism Management</option>
+                            <option value="BSCJ"    {% if student['course'] == 'BSCJ'    %}selected{% endif %}>BSCJ - Criminal Justice</option>
+                            <option value="JD"      {% if student['course'] == 'JD'      %}selected{% endif %}>JD - Juris Doctor</option>
+                            <option value="BSARCH"  {% if student['course'] == 'BSARCH'  %}selected{% endif %}>BS Architecture</option>
+                            <option value="BSSW"    {% if student['course'] == 'BSSW'    %}selected{% endif %}>BS Social Work</option>
+                            <option value="BSMARE"  {% if student['course'] == 'BSMARE'  %}selected{% endif %}>BS Marine Engineering</option>
+                            <option value="BSMARTR" {% if student['course'] == 'BSMARTR' %}selected{% endif %}>BS Marine Transportation</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Year Level</label>
+                        <select name="course_level" class="field-input">
+                            <option value="1" {% if student['course_level'] == '1' %}selected{% endif %}>1st Year</option>
+                            <option value="2" {% if student['course_level'] == '2' %}selected{% endif %}>2nd Year</option>
+                            <option value="3" {% if student['course_level'] == '3' %}selected{% endif %}>3rd Year</option>
+                            <option value="4" {% if student['course_level'] == '4' %}selected{% endif %}>4th Year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="field-label">Email</label>
+                        <input type="email" name="email" value="{{ student['email'] }}" class="field-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Address</label>
+                        <input type="text" name="address" value="{{ student['address'] }}" class="field-input">
+                    </div>
+                </div>
+
+                <div class="profile-save">
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function () {
+        document.getElementById('avatarPreview').src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+</script>
+
+</body>
+</html>

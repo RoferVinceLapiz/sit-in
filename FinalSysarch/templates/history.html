@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student History | CCS Sit-in Monitoring System</title>
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: #4b2c80;
+            color: white;
+            padding: 14px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #facc15;
+        }
+
+        /* PAGE */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            color: #4b2c80;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        /* FLASH */
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .flash.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .flash.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        /* TABLE */
+        table.dataTable {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+
+        table.dataTable thead th {
+            background: #4b2c80;
+            color: white;
+            padding: 12px;
+            text-align: center;
+        }
+
+        table.dataTable tbody td {
+            padding: 12px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .status-complete {
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .btn-feedback {
+            background: #facc15;
+            color: #4b2c80;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-feedback:hover {
+            background: #eab308;
+        }
+
+        .badge-done {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 520px;
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-title {
+            margin-top: 0;
+            color: #4b2c80;
+            margin-bottom: 18px;
+        }
+
+        .feedback-info {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        .feedback-info p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0 18px;
+            flex-wrap: wrap;
+        }
+
+        .star-rating label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            resize: vertical;
+            font-size: 14px;
+            margin-top: 8px;
+            margin-bottom: 18px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #4b2c80;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #3b2164;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h2>CCS Sit-in Monitoring System</h2>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('edit_profile') }}">Edit Profile</a>
+            <a href="{{ url_for('history') }}" class="active">History</a>
+            <a href="{{ url_for('reservation') }}">Reservation</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <h1 class="page-title">My Sit-in History</h1>
+
+        <!-- FLASH MESSAGES -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="card">
+            <table id="historyTable" class="display">
+                <thead>
+                    <tr>
+                        <th>ID Number</th>
+                        <th>Purpose</th>
+                        <th>Laboratory</th>
+                        <th>Login Time</th>
+                        <th>Logout Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in records %}
+                    <tr>
+                        <td>{{ r['id_number'] }}</td>
+                        <td>{{ r['purpose'] }}</td>
+                        <td>
+                            {% if r['lab'] == 'Lecture' %}
+                                Lecture Room
+                            {% else %}
+                                Lab {{ r['lab'] }}
+                            {% endif %}
+                        </td>
+                        <td>{{ r['login_time'] if r['login_time'] else '—' }}</td>
+                        <td>{{ r['logout_time'] if r['logout_time'] else 'Still Active' }}</td>
+                        <td>
+                            {% if r['logout_time'] %}
+                                <span class="status-complete">Completed</span>
+                            {% else %}
+                                <span class="status-active">Active</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r['logout_time'] %}
+                                {% if r['feedback'] %}
+                                    <span class="badge-done">Feedback Sent</span>
+                                {% else %}
+                                    <button class="btn-feedback"
+                                            onclick='openFeedback(
+                                                {{ r["id"] }},
+                                                {{ r["id_number"]|tojson }},
+                                                {{ r["purpose"]|tojson }},
+                                                {{ ("Lecture Room" if r["lab"] == "Lecture" else "Lab " ~ r["lab"])|tojson }}
+                                            )'>
+                                        Feedback
+                                    </button>
+                                {% endif %}
+                            {% else %}
+                                <span style="color:#6b7280; font-size:13px;">Waiting logout</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FEEDBACK MODAL -->
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeFeedback()">&times;</span>
+            <h2 class="modal-title">Sit-in Laboratory Feedback</h2>
+
+            <form method="POST" action="{{ url_for('submit_feedback') }}" id="feedbackForm">
+                <input type="hidden" name="record_id" id="record_id">
+
+                <div class="feedback-info">
+                    <p><strong>ID Number:</strong> <span id="fb_id_number"></span></p>
+                    <p><strong>Purpose:</strong> <span id="fb_purpose"></span></p>
+                    <p><strong>Laboratory:</strong> <span id="fb_lab"></span></p>
+                </div>
+
+                <label><strong>Rate your experience:</strong></label>
+                <div class="star-rating">
+                    <label><input type="radio" name="rating" value="5" required> 5 ⭐</label>
+                    <label><input type="radio" name="rating" value="4"> 4 ⭐</label>
+                    <label><input type="radio" name="rating" value="3"> 3 ⭐</label>
+                    <label><input type="radio" name="rating" value="2"> 2 ⭐</label>
+                    <label><input type="radio" name="rating" value="1"> 1 ⭐</label>
+                </div>
+
+                <label for="feedback"><strong>Feedback / Experience in the Laboratory:</strong></label>
+                <textarea
+                    name="feedback"
+                    id="feedback"
+                    rows="5"
+                    required
+                    placeholder="Share your experience during your sit-in in the laboratory...">
+                </textarea>
+
+                <button type="submit" class="submit-btn">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#historyTable').DataTable({
+                pageLength: 10,
+                order: [[3, 'desc']]
+            });
+        });
+
+        function openFeedback(recordId, idNumber, purpose, lab) {
+            document.getElementById('record_id').value = recordId;
+            document.getElementById('fb_id_number').textContent = idNumber;
+            document.getElementById('fb_purpose').textContent = purpose;
+            document.getElementById('fb_lab').textContent = lab;
+
+            // Reset form fields
+            document.getElementById('feedback').value = '';
+            const ratings = document.querySelectorAll('input[name="rating"]');
+            ratings.forEach(r => r.checked = false);
+
+            document.getElementById('feedbackModal').style.display = 'flex';
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('feedbackModal');
+            if (event.target === modal) {
+                closeFeedback();
+            }
+        }
+    </script>
+
+</body>
+</html>

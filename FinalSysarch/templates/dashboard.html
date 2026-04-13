@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - CCS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --uc-purple: #4b2c80;
+            --uc-purple-dark: #2d1a4d;
+            --uc-gold: #fdb813;
+        }
+
+        body { background: #f4f4f9; font-family: 'Segoe UI', sans-serif; margin: 0; }
+
+        /* NAVBAR - Matches Admin Exactly */
+        .dash-navbar {
+            background: linear-gradient(135deg, var(--uc-purple) 0%, var(--uc-purple-dark) 100%);
+            height: 56px;
+            padding: 0 0 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .dash-title { color: white; font-weight: 700; font-size: 15px; letter-spacing: 0.5px; }
+
+        .dash-menu { display: flex; align-items: center; height: 100%; }
+
+        .dash-menu a, .dropdown-toggle {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 0 15px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .dash-menu a:hover:not(.logout-btn) {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--uc-gold);
+        }
+
+        /* The Gold Logout Button */
+        .logout-btn {
+            background: var(--uc-gold) !important;
+            color: var(--uc-purple-dark) !important;
+            height: 100% !important;
+            padding: 0 25px !important;
+            font-weight: 800 !important;
+            text-transform: uppercase;
+            border-radius: 0 !important;
+        }
+
+        /* DASHBOARD CONTENT */
+        .dash-body { display: flex; gap: 20px; padding: 25px; align-items: flex-start; }
+
+        .dash-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dash-card-header {
+            background: var(--uc-purple);
+            color: white;
+            padding: 15px;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dash-card-body { padding: 20px; }
+
+        /* Student Info Styling */
+        .dash-avatar { text-align: center; margin-bottom: 20px; }
+        .dash-avatar img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid var(--uc-gold);
+            object-fit: cover;
+        }
+
+        .dash-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #444;
+        }
+
+        .dash-info-icon { color: var(--uc-purple); width: 20px; text-align: center; }
+
+        /* Announcement Items */
+        .announcement-item {
+            border-left: 4px solid var(--uc-gold);
+            background: #fcfcfc;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+        .announcement-meta { font-weight: 700; color: var(--uc-purple); font-size: 0.8rem; margin: 0; }
+        .announcement-text { margin: 8px 0 0; font-size: 0.95rem; color: #555; line-height: 1.5; }
+
+        /* Rules Text */
+        .rules-university { color: var(--uc-purple); font-weight: 800; margin-bottom: 2px; }
+        .rules-college { color: #666; font-size: 0.8rem; font-weight: 600; margin-bottom: 15px; }
+        .dash-rules p { font-size: 0.85rem; color: #444; margin-bottom: 8px; line-height: 1.4; }
+
+        /* Dropdown Simple Style */
+        .dropdown { position: relative; }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 56px;
+            right: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-menu a { color: #333 !important; height: auto !important; padding: 12px !important; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+
+<div class="dash-navbar">
+    <span class="dash-title">
+        <i class="fas fa-desktop" style="color: var(--uc-gold); margin-right: 8px;"></i>
+        CCS Sit-in Monitoring System
+    </span>
+    <div class="dash-menu">
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle">Notification <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 5px;"></i></a>
+            <div class="dropdown-menu">
+                <a href="#">No new notifications</a>
+            </div>
+        </div>
+        <a href="/dashboard">Home</a>
+        <a href="/edit-profile">Edit Profile</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="/reservation">Reservation</a>
+        <a href="/logout" class="logout-btn">Log out</a>
+    </div>
+</div>
+
+<div class="dash-body">
+
+    <div class="dash-card" style="flex: 0 0 280px;">
+    <div class="dash-card-header">👤 Student Profile</div>
+    <div class="dash-card-body">
+        <div class="dash-avatar">
+            <img src="{{ url_for('static', filename='uploads/' + student['id_number'] + '.png') }}"
+                 alt="Avatar"
+                 onerror="this.src='https://ui-avatars.com/api/?name={{ student.first_name }}+{{ student.last_name }}&background=4b2c80&color=fff&size=120'">
+        </div>
+
+        <div class="dash-info-list">
+            <div class="dash-info-item">
+                <i class="fas fa-id-card dash-info-icon"></i>
+                <span><strong>ID:</strong> {{ student['id_number'] }}</span>
+            </div>
+            <div class="dash-info-item">
+                <i class="fas fa-user dash-info-icon"></i>
+                <span>{{ student['first_name'] }} {{ student['last_name'] }}</span>
+            </div>
+            <div class="dash-info-item">
+                <i class="fas fa-graduation-cap dash-info-icon"></i>
+                <span>{{ student['course'] }} - {{ student['course_level'] }}</span>
+            </div>
+            <div class="dash-info-item">
+                <i class="fas fa-envelope dash-info-icon"></i>
+                <span style="font-size: 0.8rem; word-break: break-all;">{{ student['email'] }}</span>
+            </div>
+
+            <div class="dash-info-item" style="margin-top: 10px; background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid var(--uc-gold);">
+                <i class="fas fa-clock dash-info-icon" style="color: #b45309;"></i>
+                <span>
+                    <strong>Sessions:</strong> 
+                    <span style="color: #b45309; font-weight: 800; font-size: 1.1rem;">
+                        {{ remaining }}
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="dash-card" style="flex: 1;">
+        <div class="dash-card-header">📢 Announcements</div>
+        <div class="dash-card-body">
+            {% if announcements %}
+                {% for a in announcements %}
+                <div class="announcement-item">
+                    <p class="announcement-meta"><i class="fas fa-user-shield"></i> CCS Admin | {{ a['posted_at'][:10] }}</p>
+                    <p class="announcement-text">{{ a['message'] }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 40px 0;">
+                    <i class="fas fa-bullhorn" style="font-size: 3rem; color: #eee; margin-bottom: 10px;"></i>
+                    <p style="font-size:13px; color:#aaa;">No announcements from admin yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="dash-card" style="flex: 1.2;">
+        <div class="dash-card-header">📋 Lab Rules</div>
+        <div class="dash-card-body dash-rules">
+            <h3 class="rules-university">University of Cebu</h3>
+            <p class="rules-college">COLLEGE OF INFORMATION &amp; COMPUTER STUDIES</p>
+
+            <div style="height: 350px; overflow-y: auto; padding-right: 10px;">
+                <p><strong>1.</strong> Maintain silence and discipline inside the laboratory.</p>
+                <p><strong>2.</strong> Games are strictly prohibited (Computer/Card games).</p>
+                <p><strong>3.</strong> Surfing is allowed only with permission. No illegal downloads.</p>
+                <p><strong>4.</strong> Food and drinks are strictly prohibited.</p>
+                <p><strong>5.</strong> Clean your workstation before leaving.</p>
+                <p><strong>6.</strong> Report equipment damage immediately to the admin.</p>
+                <p><strong>7.</strong> Log in and Log out properly via the monitoring system.</p>
+                <p><strong>8.</strong> Observe proper dress code at all times.</p>
+                <p><strong>9.</strong> Authorized users only.</p>
+                <p><strong>10.</strong> Violations result in disciplinary action.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

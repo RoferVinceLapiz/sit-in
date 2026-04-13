@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Sit-in Records</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --uc-purple: #4b2c80;
+            --uc-purple-dark: #2d1a4d;
+            --uc-gold: #fdb813;
+            --uc-gold-hover: #e0a800;
+        }
+
+        /* NAVBAR (MATCHED EXACT STYLE) */
+        .admin-navbar {
+            background: linear-gradient(135deg, var(--uc-purple) 0%, var(--uc-purple-dark) 100%);
+            height: 56px;
+            padding: 0 0 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .admin-nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 0 12px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .admin-nav-links a:hover:not(.admin-logout-btn) {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--uc-gold);
+        }
+
+        .admin-logout-btn {
+            background: var(--uc-gold) !important;
+            color: var(--uc-purple-dark) !important;
+            height: 100% !important;
+            padding: 0 25px !important;
+            font-weight: 800 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-logout-btn:hover {
+            background: white !important;
+            color: var(--uc-purple-dark) !important;
+        }
+
+        /* CARD STYLE */
+        .dash-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .dash-card-header {
+            background: var(--uc-purple);
+            color: white;
+            padding: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--uc-purple);
+            color: white;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 10px;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        /* SEARCH */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            padding: 8px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .btn-search {
+            background: var(--uc-purple);
+            color: white;
+        }
+
+        .btn-reset {
+            background: var(--uc-gold);
+            color: var(--uc-purple-dark);
+        }
+    </style>
+</head>
+
+<body style="background:#f4f4f9;">
+
+<!-- NAVBAR (MATCHED YOUR DASHBOARD STYLE) -->
+<div class="admin-navbar">
+    <span style="color:white;font-weight:700;font-size:15px;letter-spacing:0.5px;">
+        <i class="fas fa-university" style="color: var(--uc-gold); margin-right:8px;"></i>
+        COLLEGE OF COMPUTER STUDIES ADMIN
+    </span>
+
+    <div class="admin-nav-links" style="display:flex; align-items:center; height:100%;">
+        <a href="/admin/dashboard">Home</a>
+        <a href="javascript:void(0)">Search</a>
+        <a href="/admin/students">Students</a>
+        <a href="/admin/sitin-records">Sit-in</a>
+        <a href="/admin/view-sitin-records">View Sit-in Records</a>
+        <a href="/admin/sitin-reports">Sit-in Reports</a>
+        <a href="/admin/feedback-reports">Feedback Reports</a>
+        <a href="/admin/reservations">Reservation</a>
+
+        <a href="/admin/logout" class="admin-logout-btn">Log out</a>
+    </div>
+</div>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div style="padding:15px;">
+    {% for category, message in messages %}
+        <div style="border-left:5px solid var(--uc-gold); padding:10px; background:white; margin-bottom:10px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- CONTENT -->
+<div style="padding:20px;">
+
+    <div class="dash-card">
+
+        <div class="dash-card-header">
+            📋 VIEW SIT-IN RECORDS
+        </div>
+
+        <div style="padding:20px;">
+
+            <!-- SEARCH -->
+            <form method="GET" class="search-box">
+                <input type="text" name="search_id" placeholder="Search by ID Number">
+                <button class="btn btn-search" type="submit">Search</button>
+                <a href="/admin/view-sitin-records" class="btn btn-reset">Reset</a>
+            </form>
+
+            <!-- TABLE -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Number</th>
+                        <th>Name</th>
+                        <th>Course</th>
+                        <th>Purpose</th>
+                        <th>Lab</th>
+                        <th>Login Time</th>
+                        <th>Logout Time</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for r in records %}
+                    <tr>
+                        <td>{{ r.id_number }}</td>
+                        <td>{{ r.first_name }} {{ r.last_name }}</td>
+                        <td>{{ r.course if r.course else 'N/A' }}</td>
+                        <td>{{ r.purpose }}</td>
+                        <td>{{ r.lab }}</td>
+                        <td>{{ r.login_time }}</td>
+                        <td>
+                            {% if r.logout_time %}
+                                {{ r.logout_time }}
+                            {% else %}
+                                <span style="color:red;font-weight:bold;">ACTIVE</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% if not records %}
+                <p style="text-align:center; margin-top:20px; color:#888;">
+                    No sit-in records found.
+                </p>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

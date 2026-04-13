@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Students - CCS Sit-in Monitoring System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="dash-navbar">
+    <span class="dash-title">Dashboard</span>
+    <div class="dash-menu">
+        <a href="#">Notification</a>
+        <a href="/dashboard">Home</a>
+        <a href="/edit-profile">Edit Profile</a>
+        <a href="/students" class="active-link">Students</a>
+        <a href="#">History</a>
+        <a href="/admin/reservations">Reservations</a>
+        <a href="/logout" class="logout-btn">Log out</a>
+    </div>
+</div>
+
+<div class="students-wrapper">
+
+    <div class="students-card">
+
+        <div class="students-header">
+            <h2 class="students-title">Student Records</h2>
+            <input type="text" id="searchInput" placeholder="Search student..." class="search-input" onkeyup="searchTable()">
+        </div>
+
+        <div class="table-wrapper">
+            <table class="students-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID Number</th>
+                        <th>Last Name</th>
+                        <th>First Name</th>
+                        <th>Middle Name</th>
+                        <th>Course</th>
+                        <th>Level</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTable">
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ student['id_number'] }}</td>
+                        <td>{{ student['last_name'] }}</td>
+                        <td>{{ student['first_name'] }}</td>
+                        <td>{{ student['middle_name'] }}</td>
+                        <td><span class="course-badge">{{ student['course'] }}</span></td>
+                        <td>{{ student['course_level'] }}</td>
+                        <td>{{ student['email'] }}</td>
+                        <td>{{ student['address'] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="no-data">No students registered yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            Total Students: <strong>{{ students | length }}</strong>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function searchTable() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#studentTable tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(input) ? '' : 'none';
+    });
+}
+</script>
+
+</body>
+</html>

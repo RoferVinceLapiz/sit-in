@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Reservations</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --uc-purple: #4b2c80;
+            --uc-purple-dark: #2d1a4d;
+            --uc-gold: #fdb813;
+        }
+
+        body {
+            background: #f4f4f9;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+        }
+
+        /* ✅ MATCHED NAVBAR (FROM DASHBOARD) */
+        .admin-navbar {
+            background: linear-gradient(135deg, var(--uc-purple), var(--uc-purple-dark));
+            height: 56px;
+            padding-left: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .admin-navbar-title {
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .admin-nav-links {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .admin-nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 0 12px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .admin-nav-links a:hover:not(.admin-logout-btn) {
+            background: rgba(255,255,255,0.1);
+            color: var(--uc-gold);
+        }
+
+        .admin-logout-btn {
+            background: var(--uc-gold) !important;
+            color: var(--uc-purple-dark) !important;
+            font-weight: 800;
+            padding: 0 25px !important;
+        }
+
+        /* PAGE */
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--uc-purple);
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--uc-purple);
+            color: white;
+            padding: 14px 20px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        th {
+            background: var(--uc-purple);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-pending  { background: #fef3c7; color: #92400e; }
+        .badge-approved { background: #d1fae5; color: #065f46; }
+        .badge-rejected { background: #fee2e2; color: #991b1b; }
+
+        .btn { padding: 6px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; border: none; }
+        .btn-approve { background: #10b981; color: white; }
+        .btn-reject  { background: #ef4444; color: white; }
+
+    </style>
+</head>
+<body>
+
+<!-- ✅ FIXED NAVBAR -->
+<div class="admin-navbar">
+    <span class="admin-navbar-title">
+        <i class="fas fa-university" style="color: var(--uc-gold); margin-right: 8px;"></i>
+        COLLEGE OF COMPUTER STUDIES ADMIN
+    </span>
+
+    <div class="admin-nav-links">
+        <a href="/admin/dashboard">Home</a>
+        <a href="javascript:void(0)" onclick="openSearchModal()">Search</a>
+        <a href="/admin/students">Students</a>
+        <a href="/admin/sitin-records">Sit-in</a>
+        <a href="/admin/view-sitin-records">View Sit-in Records</a>
+        <a href="/admin/sitin-reports">Sit-in Reports</a>
+        <a href="/admin/feedback-reports">Feedback Reports</a>
+        <a href="/admin/reservations" style="color: var(--uc-gold);">Reservation</a>
+
+        <a href="/admin/logout" class="admin-logout-btn">Log out</a>
+    </div>
+</div>
+
+<div class="page-wrapper">
+    <h2 class="page-title">
+        <i class="fas fa-calendar-check" style="color: var(--uc-gold);"></i>
+        Student Reservations
+    </h2>
+
+    <div class="card">
+        <div class="card-header">All Reservations</div>
+
+        {% if reservations %}
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ID Number</th>
+                    <th>Student Name</th>
+                    <th>Purpose</th>
+                    <th>Lab</th>
+                    <th>Time In</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for r in reservations %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ r['id_number'] }}</td>
+                    <td>{{ r['first_name'] }} {{ r['last_name'] }}</td>
+                    <td>{{ r['purpose'] }}</td>
+                    <td>Lab {{ r['lab'] }}</td>
+                    <td>{{ r['time_in'] }}</td>
+                    <td>{{ r['date'] }}</td>
+                    <td>
+                        <span class="badge badge-{{ r['status']|lower }}">
+                            {{ r['status'] }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if r['status'] == 'Pending' %}
+                        <form method="POST" action="/admin/reservation/approve/{{ r['id'] }}" style="display:inline;">
+                            <button class="btn btn-approve">Approve</button>
+                        </form>
+                        <form method="POST" action="/admin/reservation/reject/{{ r['id'] }}" style="display:inline;">
+                            <button class="btn btn-reject">Reject</button>
+                        </form>
+                        {% else %}
+                        <span style="color:#aaa;">Done</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center;padding:40px;color:#aaa;">
+            No reservations yet.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function openSearchModal() {
+    alert("Search modal from dashboard not included here.");
+}
+</script>
+
+</body>
+</html>
